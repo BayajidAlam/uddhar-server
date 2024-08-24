@@ -27,6 +27,10 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+})
+
 app.use(cookieParser());
 // using parser
 app.use(express.json());

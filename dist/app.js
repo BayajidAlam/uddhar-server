@@ -26,6 +26,9 @@ app.use((0, cors_1.default)({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
 }));
+app.get("/", (req, res) => {
+    res.send("Hello World!");
+});
 app.use((0, cookie_parser_1.default)());
 // using parser
 app.use(express_1.default.json());

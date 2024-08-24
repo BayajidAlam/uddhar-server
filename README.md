@@ -1,9 +1,6 @@
-
-
-
 ## Introduction
 
-This is a detailed guide for frontend dev's how to send payload to the following api's are given below
+This is a detailed guide for frontend dev's how to send payload to the following api's and the response are given below.
 
 ### Run this project locally
 - Clone this repo
@@ -27,7 +24,7 @@ https://github.com/BayajidAlam/uddhar-server
 
 ### Root url
 ```
-    http://localhost:5000/api/v1
+    https://uddhar-server.vercel.app/api/v1
 ```
 
 ## create post (POST)
