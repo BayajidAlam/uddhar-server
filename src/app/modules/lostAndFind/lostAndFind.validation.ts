@@ -40,8 +40,6 @@ const createLostAndFind = z.object({
     }),
     timeWhenLost: z.string({
       required_error: 'Time when lost is required',
-    }).refine((val) => !isNaN(Date.parse(val)), {
-      message: 'Invalid date format',
     }),
     postedBy: postMakerSchema,
   }),

@@ -14,7 +14,7 @@ const getAll = async (
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<LostAndFind[]>> => {
 
-  const { searchTerm } = filters;
+  const { searchTerm, isFound } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -30,6 +30,13 @@ const getAll = async (
       })),
     });
   }
+
+if (typeof isFound !== 'undefined') {
+  const isFoundBoolean = String(isFound) === 'true';
+  andConditions.push({
+    isFound: isFoundBoolean,
+  });
+}
 
   const whereConditions: Prisma.LostAndFindWhereInput =
     andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
