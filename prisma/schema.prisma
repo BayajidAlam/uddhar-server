@@ -1,0 +1,459 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  role     UserRole
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  superAdmin   SuperAdmin?
+  admin        Admin?
+  seller       Seller?
+  customer     Customer?
+  sellsManager SellsManager?
+
+  sentMessages   Conversation[] @relation(name: "Sender")
+  placedMessages Conversation[] @relation(name: "Receiver")
+
+  cart     Cart[]
+  Payment  Payment[]
+  orders   Order[]
+  WishList WishList[]
+
+  @@map("users")
+}
+
+model SuperAdmin {
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  nidNumber              String
+  userId                 String  @unique
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("superAdmins")
+}
+
+model Admin {
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  userId                 String  @unique
+  nidNumber              String
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Seller {
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String
+  profileImg             String
+  userId                 String  @unique
+  nidNumber              String
+  isActive               Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Shop      Shop[]
+
+  @@map("sellers")
+}
+
+model SellsManager {
+  id                     String  @id @default(uuid())
+  fullName               String
+  contactNumber          String  @unique
+  emergencyContactNumber String
+  address                String?
+  profileImg             String?
+  userId                 String  @unique
+  nidNumber              String
+  isActive               Boolean @default(true)
+
+  user   User   @relation(fields: [userId], references: [id])
+  Shop   Shop?  @relation(fields: [shopId], references: [id])
+  shopId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sellsManagers")
+}
+
+model Customer {
+  id                     String  @id @default(uuid())
+  fullName               String 
+  contactNumber          String? @unique
+  emergencyContactNumber String?
+  address                String?
+  profileImg             String?
+  userId                 String  @unique
+  isActive               Boolean @default(true)
+  dob                    String?
+  user                   User    @relation(fields: [userId], references: [id])
+
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ReviewAndRatings ReviewAndRatings[]
+
+  @@map("customers")
+}
+
+model Conversation {
+  id           String @id @default(uuid())
+  message      String
+  participants String
+  senderId     String
+  sender       User   @relation(name: "Sender", fields: [senderId], references: [id])
+  receiverId   String
+  receiver     User   @relation(name: "Receiver", fields: [receiverId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  message        String
+  senderId       String
+  receiverId     String
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("messages")
+}
+
+model Shop {
+  id           String         @id @default(uuid())
+  sellerId     String
+  sellsMangers SellsManager[]
+  shopName     String         @unique
+  shopImage    String
+  rating       String         @default("0")
+  location     String
+  isVerified   Boolean        @default(false)
+  products     Product[]
+  seller       Seller         @relation(fields: [sellerId], references: [id])
+
+  cupons     Coupon[]
+  productSku ProductSku[]
+  colors     Color[]
+  sizes      Size[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("shop")
+}
+
+model Coupon {
+  id             String   @id @default(uuid())
+  shopId         String
+  couponName     String   @unique
+  discount       String
+  shippingCharge String
+  validTill      DateTime
+  createdBy      String
+
+  Shop Shop @relation(fields: [shopId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Order     Order[]
+
+  @@map("coupon")
+}
+
+model Product {
+  id     String @id @default(uuid())
+  shopId String
+
+  Shop Shop @relation(fields: [shopId], references: [id])
+
+  productName             String
+  productMainImage        String
+  productAdditionalImages String[]
+  productDetails          String
+  productAdditionalInfo   Json
+  minPrice                String
+  discountPrice           String
+  discountPercentage      String
+  moneySaved              String
+  sellCount               Int      @default(0)
+
+  createdBy    String
+  categoryId   String
+  Category     Category @relation(fields: [categoryId], references: [id])
+  productSkuId String
+
+  productTags      String[]
+  ReviewAndRatings ReviewAndRatings[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orderId      String?
+  orderOrderId String?
+  Order        Order?      @relation(fields: [orderId], references: [id])
+  cart         Cart[]
+  cartId       String?
+  ProductSku   ProductSku  @relation(fields: [productSkuId], references: [id])
+  OrderItem    OrderItem[]
+  WishList     WishList[]
+
+  @@map("product")
+}
+
+// model PaymentMode {
+//   id    String @id @default(uuid())
+//   title String @unique
+
+//   Product Product[]
+
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+//   Order     Order[]
+
+//   @@map("paymentMode")
+// }
+
+model Category {
+  id      String    @id @default(uuid())
+  title   String    @unique
+  Product Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("category")
+}
+
+model ProductSku {
+  id       String @id @default(uuid())
+  title    String @unique
+  quantity String @default("0")
+
+  availableColor String[]
+  availableSize  String[]
+  shopId         String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Product Product[]
+  Shop    Shop      @relation(fields: [shopId], references: [id])
+
+  @@map("sku")
+}
+
+model Color {
+  id     String @id @default(uuid())
+  title  String
+  shopId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Shop Shop @relation(fields: [shopId], references: [id])
+
+  @@map("colors")
+}
+
+model Size {
+  id    String @id @default(uuid())
+  title String
+
+  shopId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Shop Shop @relation(fields: [shopId], references: [id])
+
+  @@map("sizes")
+}
+
+model ProductTags {
+  id    String @id @default(uuid())
+  title String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tags")
+}
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User    User    @relation(fields: [userId], references: [id])
+  Product Product @relation(fields: [productId], references: [id])
+
+  @@map("carts")
+}
+
+model Order {
+  id String @id @default(uuid())
+
+  fullName               String
+  contactNumber          String?
+  emergencyContactNumber String?
+  email                  String
+  address                String?
+  subTotal               String
+  shippingCharge         String
+  tax                    String
+  total                  String
+  paidAmount             Int
+  dueAmount              Int
+
+  orderStatus OrderStatus @default(placed)
+  trnsId      String      @unique
+  isPaid      Boolean     @default(false)
+
+  orderPlacedAt       DateTime  @default(now())
+  payment_acceptedAt  DateTime?
+  delivered_to_curier DateTime?
+  curier_wareshouse   DateTime?
+  being_delivered     DateTime?
+  delivered           DateTime?
+  canceledAt          DateTime?
+
+  userId   String
+  shopId   String
+  couponId String?
+  cupon    Coupon? @relation(fields: [couponId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id])
+  Payment    Payment[]
+  OrderItems OrderItem[]
+  Product    Product[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  quantity  Int
+  Order     Order   @relation(fields: [orderId], references: [id])
+  Product   Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Payment {
+  id      String @id @default(uuid())
+  trnxId  String @unique
+  userId  String
+  orderId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User  User  @relation(fields: [userId], references: [id])
+  Order Order @relation(fields: [orderId], references: [id])
+
+  @@map("payments")
+}
+
+model WishList {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User    User    @relation(fields: [userId], references: [id])
+  Product Product @relation(fields: [productId], references: [id])
+
+  @@map("wishlists")
+}
+
+model ReviewAndRatings {
+  id         String   @id @default(uuid())
+  Customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+
+  Product   Product @relation(fields: [productId], references: [id])
+  productId String
+  comment   String
+  rating    String
+  like      String
+  disLike   String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviewAndRatings")
+}
+
+// enum
+enum UserRole {
+  super_admin
+  admin
+  seller
+  sells_manager
+  customer
+}
+
+enum OrderStatus {
+  placed
+  payment_accepted
+  delivered_to_curier
+  curier_wareshouse
+  being_delivered
+  delivered
+  cancel
+  returned
+}
