@@ -14,7 +14,7 @@ import { Server } from 'socket.io';
 
 // import router
 import routes from './app/routes';
-import corsOptions from './config/corsOptions';
+
 const app: Application = express();
 
 // socket.io

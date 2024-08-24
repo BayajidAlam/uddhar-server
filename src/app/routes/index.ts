@@ -1,11 +1,11 @@
 import express from 'express';
-import { ColorsRoutes } from '../modules/color/color.route';
+import { LostAndFindRoutes } from '../modules/lostAndFind/lostAndFind.route';
 const router = express.Router();
 
 const moduleRoutes = [
   {
     path: '/lost-and-found',
-    route: ColorsRoutes,
+    route: LostAndFindRoutes,
   },
 ];
 
