@@ -6,9 +6,11 @@ const postMakerSchema = z.object({
   name: z.string({
     required_error: 'Name is required',
   }),
-  email: z.string({
-    required_error: 'Email is required',
-  }).email('Invalid email format'),
+  email: z
+    .string({
+      required_error: 'Email is required',
+    })
+    .email('Invalid email format'),
   contactNumber: z.string({
     required_error: 'Contact number is required',
   }),
@@ -48,18 +50,7 @@ const createLostAndFind = z.object({
 // Validation schema for updating LostAndFind model
 const updateLostAndFind = z.object({
   body: z.object({
-    id: z.string().uuid().optional(),
-    name: z.string().optional(),
-    age: z.number().optional(),
-    description: z.string().optional(),
-    clothes: z.string().optional(),
-    address: z.string().optional(),
-    placeWhereLost: z.string().optional(),
-    imageUrl: z.string().optional(),
-    timeWhenLost: z.string().optional(),
-    isFound: z.boolean().optional(),
-    postMakerId: z.string(),
-    postedBy: postMakerSchema.partial(),
+    isFound: z.boolean(),
   }),
 });
 

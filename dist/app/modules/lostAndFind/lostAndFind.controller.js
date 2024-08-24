@@ -23,47 +23,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PayModeController = void 0;
-const paymentMode_constant_1 = require("./paymentMode.constant");
+exports.LostAndFindController = void 0;
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../../shared/catchAsync"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const pagination_1 = require("../../../constaints/pagination");
-const paymentMode_service_1 = require("./paymentMode.service");
+const lostAndFind_service_1 = require("./lostAndFind.service");
+const lostAndFind_constant_1 = require("./lostAndFind.constant");
 // get all
 const getAll = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const _a = req.query, { shopId } = _a, payModeData = __rest(_a, ["shopId"]);
-    const filters = (0, pick_1.default)(payModeData, paymentMode_constant_1.PayModeFilterableFields);
+    const colorData = __rest(req.query, []);
+    const filters = (0, pick_1.default)(colorData, lostAndFind_constant_1.LostAndFindFilterableFields);
     const paginationOptions = (0, pick_1.default)(req.query, pagination_1.paginationFields);
-    const result = yield paymentMode_service_1.PaymentModeService.getAll(shopId, filters, paginationOptions);
+    const result = yield lostAndFind_service_1.LostAndFindService.getAll(filters, paginationOptions);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: 'PaymentMode retrieved successfully',
+        message: 'Lost and found post retrieved successfully',
         meta: result.meta,
         data: result.data,
     });
 }));
 //create
-const createColor = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const payModeData = req.body;
-    const result = yield paymentMode_service_1.PaymentModeService.createColor(payModeData);
+const createLostAndFind = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const _a = req.body, { postedBy } = _a, lostPersonData = __rest(_a, ["postedBy"]);
+    const result = yield lostAndFind_service_1.LostAndFindService.createLostAndFind(postedBy, lostPersonData);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'PaymentMode created Successfully',
-        data: result,
-    });
-}));
-// get single
-const getSingle = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const result = yield paymentMode_service_1.PaymentModeService.getSingle(id);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: 'PaymentMode retrieved successfully',
+        message: 'Lost post created Successfully',
         data: result,
     });
 }));
@@ -71,29 +60,16 @@ const getSingle = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
 const updateSingle = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.id;
     const data = req.body;
-    const result = yield paymentMode_service_1.PaymentModeService.updateSingle(id, data);
+    const result = yield lostAndFind_service_1.LostAndFindService.updateSingle(id, data);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: 'PaymentMode Updated Successfully',
+        message: 'Status Updated Successfully',
         data: result,
     });
 }));
-// delete
-const deleteSingle = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const id = req.params.id;
-    const result = yield paymentMode_service_1.PaymentModeService.deleteSingle(id);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: 'PaymentMode Deleted successfully',
-        data: result,
-    });
-}));
-exports.PayModeController = {
-    createColor,
+exports.LostAndFindController = {
+    createLostAndFind,
     getAll,
-    getSingle,
     updateSingle,
-    deleteSingle,
 };

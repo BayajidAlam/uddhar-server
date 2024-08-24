@@ -1,4 +1,4 @@
-import {  LostAndFind, PostMaker, Prisma } from '@prisma/client';
+import { LostAndFind, PostMaker, Prisma } from '@prisma/client';
 import prisma from '../../../shared/prisma';
 import { IPaginationOptions } from '../../../interfaces/pagination';
 import { IGenericResponse } from '../../../interfaces/common';
@@ -13,7 +13,6 @@ const getAll = async (
   filters: ILostAndFindFilters,
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<LostAndFind[]>> => {
-
   const { searchTerm, isFound } = filters;
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
@@ -31,12 +30,12 @@ const getAll = async (
     });
   }
 
-if (typeof isFound !== 'undefined') {
-  const isFoundBoolean = String(isFound) === 'true';
-  andConditions.push({
-    isFound: isFoundBoolean,
-  });
-}
+  if (typeof isFound !== 'undefined') {
+    const isFoundBoolean = String(isFound) === 'true';
+    andConditions.push({
+      isFound: isFoundBoolean,
+    });
+  }
 
   const whereConditions: Prisma.LostAndFindWhereInput =
     andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
@@ -74,7 +73,7 @@ const createLostAndFind = async (
   postedBy: PostMaker,
   lostPersonData: LostAndFind
 ): Promise<LostAndFind | null> => {
-  const result = await prisma.$transaction(async (prisma) => {
+  const result = await prisma.$transaction(async prisma => {
     // Check if a user with the same phone number exists
     let postMaker = await prisma.postMaker.findUnique({
       where: { contactNumber: postedBy.contactNumber },
@@ -94,8 +93,8 @@ const createLostAndFind = async (
         postMakerId: postMaker.id,
       },
       include: {
-        postedBy: true
-      }
+        postedBy: true,
+      },
     });
 
     return createdLostAndFind;
@@ -103,7 +102,6 @@ const createLostAndFind = async (
 
   return result;
 };
-
 
 // update single
 const updateSingle = async (
@@ -118,18 +116,21 @@ const updateSingle = async (
   });
 
   if (!isExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Color Not Found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Lost Post Not Found');
   }
 
   const result = await prisma.lostAndFind.update({
     where: {
       id,
     },
+    include: {
+      postedBy: true,
+    },
     data: payload,
   });
 
   if (!result) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Color');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to Update Status');
   }
 
   return result;

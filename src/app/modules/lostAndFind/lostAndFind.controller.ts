@@ -10,14 +10,11 @@ import { LostAndFindFilterableFields } from './lostAndFind.constant';
 
 // get all
 const getAll = catchAsync(async (req: Request, res: Response) => {
-  const {  ...colorData } = req.query;
+  const { ...colorData } = req.query;
   const filters = pick(colorData, LostAndFindFilterableFields);
   const paginationOptions = pick(req.query, paginationFields);
 
-  const result = await LostAndFindService.getAll(
-    filters,
-    paginationOptions
-  );
+  const result = await LostAndFindService.getAll(filters, paginationOptions);
 
   sendResponse<LostAndFind[]>(res, {
     statusCode: httpStatus.OK,
@@ -30,9 +27,11 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
 
 //create
 const createLostAndFind = catchAsync(async (req: Request, res: Response) => {
-
-  const {postedBy,...lostPersonData} = req.body;
-  const result = await LostAndFindService.createLostAndFind(postedBy,lostPersonData);
+  const { postedBy, ...lostPersonData } = req.body;
+  const result = await LostAndFindService.createLostAndFind(
+    postedBy,
+    lostPersonData
+  );
 
   sendResponse<LostAndFind>(res, {
     success: true,
@@ -52,11 +51,10 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
   sendResponse<LostAndFind>(res, {
     success: true,
     statusCode: httpStatus.OK,
-    message: 'Color Updated Successfully',
+    message: 'Status Updated Successfully',
     data: result,
   });
 });
-
 
 export const LostAndFindController = {
   createLostAndFind,

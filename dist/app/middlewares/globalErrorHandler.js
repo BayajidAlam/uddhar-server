@@ -11,8 +11,6 @@ const client_1 = require("@prisma/client");
 const handleClientError_1 = __importDefault(require("../../errors/handleClientError"));
 const config_1 = __importDefault(require("../../config"));
 const globalErrorHandler = (err, req, res, next) => {
-    // console error log
-    console.log('global error handler', err);
     let statusCode = 500;
     let message = 'Something went wrong !';
     let errorMessages = [];

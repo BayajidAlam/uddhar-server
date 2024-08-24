@@ -12,20 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductColorService = void 0;
+exports.LostAndFindService = void 0;
 const prisma_1 = __importDefault(require("../../../shared/prisma"));
 const paginationHelper_1 = require("../../../helpers/paginationHelper");
-const color_constant_1 = require("./color.constant");
 const ApiError_1 = __importDefault(require("../../../errors/ApiError"));
 const http_status_1 = __importDefault(require("http-status"));
-// get all users
-const getAll = (shopId, filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
-    const { searchTerm } = filters;
+const lostAndFind_constant_1 = require("./lostAndFind.constant");
+// get all
+const getAll = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchTerm, isFound } = filters;
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper_1.paginationHelpers.calculatePagination(paginationOptions);
-    const andConditions = [{ shopId }];
+    const andConditions = [];
     if (searchTerm) {
         andConditions.push({
-            OR: color_constant_1.ColorSearchableFields.map(field => ({
+            OR: lostAndFind_constant_1.LostAndFindSearchableFields.map(field => ({
                 [field]: {
                     contains: searchTerm,
                     mode: 'insensitive',
@@ -33,16 +33,25 @@ const getAll = (shopId, filters, paginationOptions) => __awaiter(void 0, void 0,
             })),
         });
     }
+    if (typeof isFound !== 'undefined') {
+        const isFoundBoolean = String(isFound) === 'true';
+        andConditions.push({
+            isFound: isFoundBoolean,
+        });
+    }
     const whereConditions = andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
-    const result = yield prisma_1.default.color.findMany({
+    const result = yield prisma_1.default.lostAndFind.findMany({
         where: whereConditions,
         orderBy: {
             [sortBy]: sortOrder,
         },
+        include: {
+            postedBy: true,
+        },
         skip,
         take: limit,
     });
-    const total = yield prisma_1.default.color.count({
+    const total = yield prisma_1.default.lostAndFind.count({
         where: whereConditions,
     });
     const totalPage = Math.ceil(total / limit);
@@ -56,66 +65,57 @@ const getAll = (shopId, filters, paginationOptions) => __awaiter(void 0, void 0,
         data: result,
     };
 });
-//create
-const createColor = (productColorData) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.color.create({
-        data: productColorData,
-    });
-    return result;
-});
-// get single
-const getSingle = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.color.findUnique({
-        where: {
-            id,
-        },
-    });
+//crate
+const createLostAndFind = (postedBy, lostPersonData) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
+        // Check if a user with the same phone number exists
+        let postMaker = yield prisma.postMaker.findUnique({
+            where: { contactNumber: postedBy.contactNumber },
+        });
+        // If the user doesn't exist, create a new user
+        if (!postMaker) {
+            postMaker = yield prisma.postMaker.create({
+                data: postedBy,
+            });
+        }
+        // Create the LostAndFind entry using the postMaker's ID
+        const createdLostAndFind = yield prisma.lostAndFind.create({
+            data: Object.assign(Object.assign({}, lostPersonData), { postMakerId: postMaker.id }),
+            include: {
+                postedBy: true,
+            },
+        });
+        return createdLostAndFind;
+    }));
     return result;
 });
 // update single
 const updateSingle = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     // check is exist
-    const isExist = yield prisma_1.default.color.findUnique({
+    const isExist = yield prisma_1.default.lostAndFind.findUnique({
         where: {
             id,
         },
     });
     if (!isExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Color Not Found');
+        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Lost Post Not Found');
     }
-    const result = yield prisma_1.default.color.update({
+    const result = yield prisma_1.default.lostAndFind.update({
         where: {
             id,
+        },
+        include: {
+            postedBy: true,
         },
         data: payload,
     });
     if (!result) {
-        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to Update Color');
+        throw new ApiError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to Update Status');
     }
     return result;
 });
-// delete single
-const deleteSingle = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    // check is exist
-    const isExist = yield prisma_1.default.color.findUnique({
-        where: {
-            id,
-        },
-    });
-    if (!isExist) {
-        throw new ApiError_1.default(http_status_1.default.NOT_FOUND, 'Color Not Found');
-    }
-    const result = yield prisma_1.default.color.delete({
-        where: {
-            id,
-        },
-    });
-    return result;
-});
-exports.ProductColorService = {
-    createColor,
+exports.LostAndFindService = {
+    createLostAndFind,
     getAll,
-    getSingle,
     updateSingle,
-    deleteSingle,
 };

@@ -1,5 +1,3 @@
-export const LostAndFindSearchableFields = [
-  'name',
-];
+export const LostAndFindSearchableFields = ['name'];
 
-export const LostAndFindFilterableFields = ['searchTerm','isFound'];
+export const LostAndFindFilterableFields = ['searchTerm', 'isFound'];

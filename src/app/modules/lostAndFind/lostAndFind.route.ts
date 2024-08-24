@@ -1,16 +1,13 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import {  LostAndFindValidation } from './lostAndFind.validation';
+import { LostAndFindValidation } from './lostAndFind.validation';
 import { LostAndFindController } from './lostAndFind.controller';
 const router = express.Router();
 
 // get all
-router.get(
-  '/',
-  LostAndFindController.getAll
-);
+router.get('/', LostAndFindController.getAll);
 
-// create 
+// create
 router.post(
   '/create-lost',
   validateRequest(LostAndFindValidation.createLostAndFind),
@@ -23,6 +20,5 @@ router.patch(
   validateRequest(LostAndFindValidation.updateLostAndFind),
   LostAndFindController.updateSingle
 );
-
 
 export const LostAndFindRoutes = router;
