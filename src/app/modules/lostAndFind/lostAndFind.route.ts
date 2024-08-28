@@ -7,6 +7,12 @@ const router = express.Router();
 // get all
 router.get('/', LostAndFindController.getAll);
 
+//count of total found people
+router.get(
+  '/count',
+  LostAndFindController.getCount
+);
+
 // create
 router.post(
   '/create-lost',
@@ -21,4 +27,8 @@ router.patch(
   LostAndFindController.updateSingle
 );
 
+router.delete(
+  '/:id',
+  LostAndFindController.deletePost)
+  
 export const LostAndFindRoutes = router;

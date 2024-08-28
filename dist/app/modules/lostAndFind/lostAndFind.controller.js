@@ -45,6 +45,18 @@ const getAll = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0,
         data: result.data,
     });
 }));
+//count
+const getCount = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const colorData = __rest(req.query, []);
+    const filters = (0, pick_1.default)(colorData, lostAndFind_constant_1.LostAndFindFilterableFields);
+    const result = yield lostAndFind_service_1.LostAndFindService.getCount(filters);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Count retrieved successfully',
+        data: { count: result.total },
+    });
+}));
 //create
 const createLostAndFind = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const _a = req.body, { postedBy } = _a, lostPersonData = __rest(_a, ["postedBy"]);
@@ -72,4 +84,5 @@ exports.LostAndFindController = {
     createLostAndFind,
     getAll,
     updateSingle,
+    getCount
 };

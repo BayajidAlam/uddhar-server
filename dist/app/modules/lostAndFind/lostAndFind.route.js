@@ -11,6 +11,8 @@ const lostAndFind_controller_1 = require("./lostAndFind.controller");
 const router = express_1.default.Router();
 // get all
 router.get('/', lostAndFind_controller_1.LostAndFindController.getAll);
+//count of total found people
+router.get('/count', lostAndFind_controller_1.LostAndFindController.getCount);
 // create
 router.post('/create-lost', (0, validateRequest_1.default)(lostAndFind_validation_1.LostAndFindValidation.createLostAndFind), lostAndFind_controller_1.LostAndFindController.createLostAndFind);
 // update single

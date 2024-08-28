@@ -54,7 +54,15 @@ const updateLostAndFind = z.object({
   }),
 });
 
+// delete 
+const deletePost = z.object({
+  body: z.object({
+    id: z.string()
+  }),
+});
+
 export const LostAndFindValidation = {
   createLostAndFind,
   updateLostAndFind,
+  deletePost
 };

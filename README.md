@@ -292,3 +292,37 @@ Body would be isFound true or false
     }
 }
 ```
+
+
+
+### delete any post by id(DELETE)
+### url
+```
+/lost-and-found/2b7a2b0f-7532-4a88-8b38-e2e5d2618268
+```
+
+### Examples
+
+No body required, send id though params. Response will be like this
+```
+{
+    "statusCode": 200,
+    "success": true,
+    "message": "Lost post delete successfully",
+    "data": {
+        "id": "8c9e9130-a41c-4acd-a665-a5e06a2855db",
+        "name": "হিমেল সৈকত",
+        "age": 23,
+        "description": "ফর্সা",
+        "clothes": "কালো ফতুয়া",
+        "address": "Holding No. 2141 Ali Sonar Ln",
+        "placeWhereLost": "Holding No. 2141 Ali Sonar Ln",
+        "imageUrl": "https://i.ibb.co/74c1HSK/black.png",
+        "timeWhenLost": "2024-08-26T11:44:00.000Z",
+        "isFound": false,
+        "postMakerId": "b0c3b1f5-0ff7-47d1-b4bb-51403c91ceff",
+        "createdAt": "2024-08-26T11:44:24.152Z",
+        "updatedAt": "2024-08-26T11:44:24.152Z"
+    }
+}
+```

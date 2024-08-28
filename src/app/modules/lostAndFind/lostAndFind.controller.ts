@@ -25,6 +25,21 @@ const getAll = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+//count
+const getCount = catchAsync(async (req: Request, res: Response) => {
+  const { ...colorData } = req.query;
+  const filters = pick(colorData, LostAndFindFilterableFields);
+
+  const result = await LostAndFindService.getCount(filters);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Count retrieved successfully',
+    data: { count: result.total },
+  });
+});
+
 //create
 const createLostAndFind = catchAsync(async (req: Request, res: Response) => {
   const { postedBy, ...lostPersonData } = req.body;
@@ -56,8 +71,23 @@ const updateSingle = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deletePost = catchAsync(async (req: Request, res: Response) => {
+
+  const { id } = req.params;
+  const result = await LostAndFindService.deletePost(id);
+
+  sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Lost post delete successfully',
+      data: result
+  });
+});
+
 export const LostAndFindController = {
   createLostAndFind,
   getAll,
   updateSingle,
+  getCount,
+  deletePost
 };

@@ -68,6 +68,33 @@ const getAll = async (
   };
 };
 
+// get all
+const getCount = async (
+  filters: ILostAndFindFilters
+): Promise<{ total: number }> => {
+  const { isFound } = filters;
+
+  const andConditions: Prisma.LostAndFindWhereInput[] = [];
+
+  if (typeof isFound !== 'undefined') {
+    const isFoundBoolean = String(isFound) === 'true';
+    andConditions.push({
+      isFound: isFoundBoolean,
+    });
+  }
+
+  const whereConditions: Prisma.LostAndFindWhereInput =
+    andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
+
+  const total = await prisma.lostAndFind.count({
+    where: whereConditions,
+  });
+  
+  return {
+    total,
+  };
+};
+
 //crate
 const createLostAndFind = async (
   postedBy: PostMaker,
@@ -136,8 +163,32 @@ const updateSingle = async (
   return result;
 };
 
+// delete single
+const deletePost = async (id: string): Promise<LostAndFind | null> => {
+  // check is exist
+  const isExist = await prisma.lostAndFind.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Lost Post Not Found');
+  }
+
+  const result = await prisma.lostAndFind.delete({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
+
 export const LostAndFindService = {
   createLostAndFind,
   getAll,
   updateSingle,
+  getCount,
+  deletePost
 };

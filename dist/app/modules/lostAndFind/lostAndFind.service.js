@@ -65,6 +65,24 @@ const getAll = (filters, paginationOptions) => __awaiter(void 0, void 0, void 0,
         data: result,
     };
 });
+// get all
+const getCount = (filters) => __awaiter(void 0, void 0, void 0, function* () {
+    const { isFound } = filters;
+    const andConditions = [];
+    if (typeof isFound !== 'undefined') {
+        const isFoundBoolean = String(isFound) === 'true';
+        andConditions.push({
+            isFound: isFoundBoolean,
+        });
+    }
+    const whereConditions = andConditions.length > 1 ? { AND: andConditions } : andConditions[0];
+    const total = yield prisma_1.default.lostAndFind.count({
+        where: whereConditions,
+    });
+    return {
+        total,
+    };
+});
 //crate
 const createLostAndFind = (postedBy, lostPersonData) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.$transaction((prisma) => __awaiter(void 0, void 0, void 0, function* () {
@@ -118,4 +136,5 @@ exports.LostAndFindService = {
     createLostAndFind,
     getAll,
     updateSingle,
+    getCount
 };
